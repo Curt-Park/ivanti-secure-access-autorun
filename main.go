@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/go-vgo/robotgo"
+	"github.com/go-vgo/robotgo/clipboard"
 )
 
 func main() {
@@ -17,18 +18,18 @@ func main() {
 	args := commands.vpnExecution
 	err := exec.Command(args[0], args[1], args[2]).Start()
 	if err != nil {
-		log.Fatal(err, ":Failed opening the process")
+		log.Fatalf("Failed opening the process: %v\n", err)
 	}
 
 	// Activate the VPN app window.
 	fpid, err := robotgo.FindIds("Ivanti Secure Access")
 	if err != nil || len(fpid) == 0 {
-		log.Fatal(err, ":Failed finding the process")
+		log.Fatalf("Failed finding the process: %v\n", err)
 	}
 	log.Println("The process ID:", fpid[0])
 	err = robotgo.ActivePid(fpid[0])
 	if err != nil {
-		log.Fatal(err, ":Failed activating the window")
+		log.Fatalf("Failed activating the window: %v\n", err)
 	}
 
 	// Find the connection button location.
@@ -36,18 +37,18 @@ func main() {
 	out, err := exec.Command(args[0], args[1], args[2]).CombinedOutput()
 	if err != nil {
 		log.Println(string(out))
-		log.Fatal(err, ":Failed finding the connection button")
+		log.Fatalf("Failed finding the connection button: %v\n", err)
 	}
 	btn_infos := strings.Split(strings.ReplaceAll(string(out), "\r\n", "\n"), "\n")
 	target_btn_info := strings.Split(btn_infos[1], ", ")
 	if len(target_btn_info) < 6 {
-		log.Fatal(err, ":The connection is already established")
+		log.Fatalf("The connection is already established\n")
 	}
 	var btn_location []int
 	for i := 2; i < len(target_btn_info); i++ {
 		n, err := strconv.Atoi(target_btn_info[i])
 		if err != nil {
-			log.Fatal(err, ":Failed to convert string to int")
+			log.Fatalf("Failed to convert string to int: %v\n", err)
 		}
 		btn_location = append(btn_location, n)
 	}
@@ -63,7 +64,7 @@ func main() {
 	args = commands.vpnPwFinder
 	vpnPW, err := exec.Command(args[0], args[1], args[2]).CombinedOutput()
 	if err != nil {
-		log.Fatal(err, ":Failed finding the vpn password")
+		log.Fatalf("Failed finding the vpn password: %v\n")
 	}
 	robotgo.TypeStr(string(vpnPW))
 	robotgo.KeyTap("enter")
@@ -74,7 +75,7 @@ func main() {
 	args = commands.otpFinder
 	out, err = exec.Command(args[0], args[1], args[2]).CombinedOutput()
 	if err != nil {
-		log.Fatal(err, ":Failed fetching the otp number")
+		log.Fatalf("Failed fetching the otp number: %v\n", err)
 	}
 	re := regexp.MustCompile(`\[OTP:\s(\d+)\]`)
 	match := re.FindStringSubmatch(string(out))
@@ -82,5 +83,11 @@ func main() {
 		log.Fatal("No OTP number found")
 	}
 	otp := match[1]
-	log.Println("Extracted OTP number: ", otp)
+
+	// Copy the OTP to ClipBoard.
+	err = clipboard.WriteAll(otp)
+	if err != nil {
+		log.Fatalf("Failed to copy text to clipboard: %v\n", err)
+	}
+	log.Println("Copied the OTP to the clipboard. Paste it!")
 }

@@ -3,6 +3,7 @@ module github.com/Curt-Park/ivanti-secure-access-autorun
 go 1.21.0
 
 require (
+	github.com/atotto/clipboard v0.1.4 // indirect
 	github.com/gen2brain/shm v0.0.0-20230802011745-f2460f5984f7 // indirect
 	github.com/go-ole/go-ole v1.3.0 // indirect
 	github.com/go-vgo/robotgo v0.110.1 // indirect

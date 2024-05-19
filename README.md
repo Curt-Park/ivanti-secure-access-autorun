@@ -21,3 +21,5 @@ sudo mv ivanti-secure-access-autorun /usr/bin
 ```bash
 ivanti-secure-access-autorun 
 ```
+
+It copies the OTP to the clipboard. Paste it!
