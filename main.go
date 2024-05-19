@@ -13,7 +13,8 @@ func main() {
 	commands := InitCommands()
 
 	// Open the VPN app window.
-	err := exec.Command("bash", "-c", commands.vpnExecution).Start()
+	args := commands.vpnExecution
+	err := exec.Command(args[0], args[1], args[2]).Start()
 	if err != nil {
 		log.Fatal(err, ":Failed opening the process")
 	}
@@ -30,8 +31,10 @@ func main() {
 	}
 
 	// Find the connection button location.
-	out, err := exec.Command("bash", "-c", commands.btnFinder).CombinedOutput()
+	args = commands.btnFinder
+	out, err := exec.Command(args[0], args[1], args[2]).CombinedOutput()
 	if err != nil {
+		log.Println(string(out))
 		log.Fatal(err, ":Failed finding the connection button")
 	}
 	btn_infos := strings.Split(strings.ReplaceAll(string(out), "\r\n", "\n"), "\n")
@@ -56,7 +59,8 @@ func main() {
 	robotgo.Sleep(1)
 
 	// Type the vpn password.
-	vpnPW, err := exec.Command("bash", "-c", commands.vpnPwFinder).CombinedOutput()
+	args = commands.vpnPwFinder
+	vpnPW, err := exec.Command(args[0], args[1], args[2]).CombinedOutput()
 	if err != nil {
 		log.Fatal(err, ":Failed finding the vpn password")
 	}
@@ -66,7 +70,8 @@ func main() {
 
 	// Type OTP
 	log.Println("Wait for the otp number...")
-	out, err = exec.Command("bash", "-c", commands.otpFinder).CombinedOutput()
+	args = commands.otpFinder
+	out, err = exec.Command(args[0], args[1], args[2]).CombinedOutput()
 	if err != nil {
 		log.Println(string(out))
 		log.Fatal(err, ":Failed fetching the otp number")

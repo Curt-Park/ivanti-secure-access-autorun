@@ -7,10 +7,10 @@ import (
 )
 
 type Commands struct {
-	vpnExecution string
-	btnFinder    string
-	vpnPwFinder  string
-	otpFinder    string
+	vpnExecution []string
+	btnFinder    []string
+	vpnPwFinder  []string
+	otpFinder    []string
 }
 
 //go:embed btn_finder.applescript
@@ -20,14 +20,14 @@ var btnFinderApple string
 var otpFinderApple string
 
 func InitCommands() *Commands {
-	var vpnExecution, btnFinder, vpnPwFinder, otpFinder string
+	var vpnExecution, btnFinder, vpnPwFinder, otpFinder []string
 
 	// MacOS
 	if runtime.GOOS == "darwin" {
-		vpnExecution = "open -n /Applications/Ivanti\\ Secure\\ Access.app"
-		btnFinder = "osascript -e " + "'" + btnFinderApple + "'"
-		vpnPwFinder = "security find-generic-password -s 'auto.vpn' -w"
-		otpFinder = "osascript -e " + "'" + otpFinderApple + "'"
+		vpnExecution = []string{"bash", "-c", "open -n /Applications/Ivanti\\ Secure\\ Access.app"}
+		btnFinder = []string{"osascript", "-e", btnFinderApple}
+		vpnPwFinder = []string{"bash", "-c", "security find-generic-password -s 'auto.vpn' -w"}
+		otpFinder = []string{"osascript", "-e", otpFinderApple}
 	} else {
 		log.Fatal("Not supported OS:", runtime.GOOS)
 	}

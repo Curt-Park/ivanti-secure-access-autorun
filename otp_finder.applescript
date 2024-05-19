@@ -33,6 +33,7 @@ set initialCount to getMessageCount(senderHandle)
 
 -- Execute the query and handle the result
 repeat
+    delay 1 -- Wait for 1 second before checking again
     set currentCount to getMessageCount(senderHandle)
     if currentCount > initialCount then
         set latestMessage to getLatestMessage(senderHandle)
@@ -41,5 +42,4 @@ repeat
             exit repeat
         end if
     end if
-    delay 1 -- Wait for 1 second before checking again
 end repeat
