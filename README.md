@@ -24,13 +24,14 @@ ivanti-secure-access-autorun
 
 ## How it runs
 1. activates "Ivanti Secure Access" window.
-2. clicks the connection button of the second item.
-3. gets the vpn password, and enter it.
+2. clicks the connection button of the second item in the list.
+3. gets the vpn password, and enters it.
 4. waits and fetches the OTP from SMS.
 5. copies the OTP to the clipboard.
 
 Paste it and enter!
 
 ## Limitations
-- It clicks the connection button of the second item in the list.
-- It parse the OTP from texts with a specific format: [OTP: NUMBER] ...
+It only can
+- click the connection button of the second item in the list.
+- parse the OTP from texts with a specific format: [OTP: NUMBER] ...
