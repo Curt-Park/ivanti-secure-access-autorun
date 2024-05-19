@@ -50,7 +50,7 @@ func main() {
 	log.Println("x y w h:", btn_location)
 
 	// Move the mouse pointer on the button.
-	robotgo.MouseSleep = 100 // 100 millisecond
+	robotgo.MouseSleep = 100 // millisecond
 	robotgo.Move(btn_location[0]+btn_location[2]/2, btn_location[1]+btn_location[3]/2)
 	robotgo.Click()
 	robotgo.Sleep(1)
