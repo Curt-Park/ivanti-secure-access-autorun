@@ -22,4 +22,15 @@ sudo mv ivanti-secure-access-autorun /usr/bin
 ivanti-secure-access-autorun 
 ```
 
-It copies the OTP to the clipboard. Paste it!
+## How it runs
+1. activates "Ivanti Secure Access" window.
+2. clicks the connection button of the second item.
+3. gets the vpn password, and enter it.
+4. waits and fetches the OTP from SMS.
+5. copies the OTP to the clipboard.
+
+Paste it and enter!
+
+## Limitations
+- It clicks the connection button of the second item in the list.
+- It parse the OTP from texts with a specific format: [OTP: NUMBER] ...
