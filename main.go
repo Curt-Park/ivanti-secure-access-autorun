@@ -62,11 +62,12 @@ func main() {
 
 	// Type the vpn password.
 	args = commands.vpnPwFinder
-	vpnPW, err := exec.Command(args[0], args[1], args[2]).CombinedOutput()
+	out, err = exec.Command(args[0], args[1], args[2]).CombinedOutput()
 	if err != nil {
-		log.Fatalf("Failed finding the vpn password: %v\n")
+		log.Println(string(out))
+		log.Fatalf("Failed finding the vpn password: %v\n", err)
 	}
-	robotgo.TypeStr(string(vpnPW))
+	robotgo.TypeStr(string(out))
 	robotgo.KeyTap("enter")
 	log.Println("Typed VPN password")
 
@@ -75,6 +76,7 @@ func main() {
 	args = commands.otpFinder
 	out, err = exec.Command(args[0], args[1], args[2]).CombinedOutput()
 	if err != nil {
+		log.Println(string(out))
 		log.Fatalf("Failed fetching the otp number: %v\n", err)
 	}
 	re := regexp.MustCompile(`\[OTP:\s(\d+)\]`)
