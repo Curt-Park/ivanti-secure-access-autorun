@@ -15,7 +15,7 @@ func main() {
 	commands := InitCommands()
 
 	// Open the VPN app window.
-	args := commands.vpnExecution
+	args := commands.vpnExecutor
 	err := exec.Command(args[0], args[1], args[2]).Start()
 	if err != nil {
 		log.Fatalf("Failed opening the process: %v\n", err)
