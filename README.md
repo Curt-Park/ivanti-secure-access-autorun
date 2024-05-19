@@ -14,7 +14,7 @@ For more OS supports, you need to add commands in `commands.go`.
 ## Build
 ```bash
 go build
-sudo mv ivanti-secure-access-autorun /usr/bin
+sudo mv ivanti-secure-access-autorun /usr/local/bin
 ```
 
 ## Run
