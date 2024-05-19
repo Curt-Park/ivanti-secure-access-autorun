@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os/exec"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -68,14 +69,18 @@ func main() {
 	robotgo.KeyTap("enter")
 	log.Println("Typed VPN password")
 
-	// Type OTP
+	// Get OTP from SMS.
 	log.Println("Wait for the otp number...")
 	args = commands.otpFinder
 	out, err = exec.Command(args[0], args[1], args[2]).CombinedOutput()
 	if err != nil {
-		log.Println(string(out))
 		log.Fatal(err, ":Failed fetching the otp number")
 	}
-	otpNum := string(out)
-	log.Println("OTP:", otpNum)
+	re := regexp.MustCompile(`\[OTP:\s(\d+)\]`)
+	match := re.FindStringSubmatch(string(out))
+	if len(match) <= 1 {
+		log.Fatal("No OTP number found")
+	}
+	otp := match[1]
+	log.Println("Extracted OTP number: ", otp)
 }
