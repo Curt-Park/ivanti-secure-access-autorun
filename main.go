@@ -11,15 +11,21 @@ import (
 	"github.com/go-vgo/robotgo/clipboard"
 )
 
+func executeCmd(args []string, errMsg string) string {
+	out, err := exec.Command(args[0], args[1], args[2]).CombinedOutput()
+	executionMsg := string(out)
+	if err != nil {
+		log.Println(executionMsg)
+		log.Fatalf("%s: %v\n", errMsg, err)
+	}
+	return executionMsg
+}
+
 func main() {
 	commands := InitCommands()
 
 	// Open the VPN app window.
-	args := commands.vpnExecutor
-	err := exec.Command(args[0], args[1], args[2]).Start()
-	if err != nil {
-		log.Fatalf("Failed opening the process: %v\n", err)
-	}
+	out := executeCmd(commands.vpnExecutor, "Failed opening the process")
 
 	// Activate the VPN app window.
 	fpid, err := robotgo.FindIds("Ivanti Secure Access")
@@ -33,13 +39,8 @@ func main() {
 	}
 
 	// Find the connection button location.
-	args = commands.btnFinder
-	out, err := exec.Command(args[0], args[1], args[2]).CombinedOutput()
-	if err != nil {
-		log.Println(string(out))
-		log.Fatalf("Failed finding the connection button: %v\n", err)
-	}
-	btn_infos := strings.Split(strings.ReplaceAll(string(out), "\r\n", "\n"), "\n")
+	out = executeCmd(commands.btnFinder, "Failed finding the connection button")
+	btn_infos := strings.Split(strings.ReplaceAll(out, "\r\n", "\n"), "\n")
 	target_btn_info := strings.Split(btn_infos[1], ", ")
 	if len(target_btn_info) < 6 {
 		log.Fatalf("The connection is already established\n")
@@ -61,24 +62,14 @@ func main() {
 	robotgo.Sleep(1)
 
 	// Type the vpn password.
-	args = commands.vpnPwFinder
-	out, err = exec.Command(args[0], args[1], args[2]).CombinedOutput()
-	if err != nil {
-		log.Println(string(out))
-		log.Fatalf("Failed finding the vpn password: %v\n", err)
-	}
-	robotgo.TypeStr(string(out))
+	out = executeCmd(commands.vpnPwFinder, "Failed finding the vpn password")
+	robotgo.TypeStr(out)
 	robotgo.KeyTap("enter")
 	log.Println("Typed VPN password")
 
 	// Get OTP from SMS.
 	log.Println("Wait for the otp number...")
-	args = commands.otpFinder
-	out, err = exec.Command(args[0], args[1], args[2]).CombinedOutput()
-	if err != nil {
-		log.Println(string(out))
-		log.Fatalf("Failed fetching the otp number: %v\n", err)
-	}
+	out = executeCmd(commands.otpFinder, "Failed fetching the otp number")
 	re := regexp.MustCompile(`\[OTP:\s(\d+)\]`)
 	match := re.FindStringSubmatch(string(out))
 	if len(match) <= 1 {
