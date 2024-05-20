@@ -3,7 +3,7 @@ set messagesDB to POSIX path of (path to library folder from user domain) & "Mes
 
 -- Function to get the latest message
 on getLatestMessage(senderHandle)
-	global messagesDB
+    global messagesDB
     set query to "SELECT text, datetime(date / 1000000000 + strftime('%s', '2001-01-01'), 'unixepoch', 'localtime') as message_date FROM message WHERE handle_id = (SELECT ROWID FROM handle WHERE id = " & quoted form of senderHandle & ") AND service = 'SMS' ORDER BY date DESC LIMIT 1;"
     try
         set latestMessage to do shell script "sqlite3 " & quoted form of messagesDB & " " & quoted form of query
@@ -15,7 +15,7 @@ end getLatestMessage
 
 -- Function to get the message count
 on getMessageCount(senderHandle)
-	global messagesDB
+    global messagesDB
     set query to "SELECT COUNT(*) FROM message WHERE handle_id = (SELECT ROWID FROM handle WHERE id = " & quoted form of senderHandle & ") AND service = 'SMS';"
     try
         set messageCount to do shell script "sqlite3 " & quoted form of messagesDB & " " & quoted form of query
