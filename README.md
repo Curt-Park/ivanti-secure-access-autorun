@@ -31,5 +31,5 @@ ivanti-secure-access-autorun
 
 ## Limitations
 It only can
-- click the connection button of the second item in the list.
+- click the connection button (named "연결") of the second item in the list.
 - parse the OTP from texts with a specific format: [OTP: NUMBER] ...
