@@ -1,35 +1,38 @@
 package main
 
 import (
-	_ "embed"
 	"log"
 	"runtime"
+
+	applescripts "github.com/Curt-Park/ivanti-secure-access-autorun/applescripts"
 )
 
 type Commands struct {
-	vpnExecutor  []string
-	btnFinder    []string
-	vpnPwFinder  []string
-	otpFinder    []string
+	vpnExecutor      []string
+	connectBtnFinder []string
+	vpnPwFinder      []string
+	otpNumberFinder  []string
+	otpInputFinder   []string
 }
 
-//go:embed btn_finder.applescript
-var btnFinderApple string
-
-//go:embed otp_finder.applescript
-var otpFinderApple string
-
 func InitCommands() *Commands {
-	var vpnExecutor, btnFinder, vpnPwFinder, otpFinder []string
+	var vpnExecutor, connectBtnFinder, vpnPwFinder, otpNumberFinder, otpInputFinder []string
 
 	// MacOS
 	if runtime.GOOS == "darwin" {
 		vpnExecutor = []string{"bash", "-c", "open -n /Applications/Ivanti\\ Secure\\ Access.app"}
-		btnFinder = []string{"osascript", "-e", btnFinderApple}
+		connectBtnFinder = []string{"osascript", "-e", applescripts.ConnectBtnFinderApple}
 		vpnPwFinder = []string{"bash", "-c", "security find-generic-password -s 'auto.vpn' -w"}
-		otpFinder = []string{"osascript", "-e", otpFinderApple}
+		otpNumberFinder = []string{"osascript", "-e", applescripts.OtpNumberFinderApple}
+		otpInputFinder = []string{"osascript", "-e", applescripts.OtpInputFinderApple}
 	} else {
 		log.Fatal("Not supported OS:", runtime.GOOS)
 	}
-	return &Commands{vpnExecutor: vpnExecutor, btnFinder: btnFinder, vpnPwFinder: vpnPwFinder, otpFinder: otpFinder}
+	return &Commands{
+		vpnExecutor:      vpnExecutor,
+		connectBtnFinder: connectBtnFinder,
+		vpnPwFinder:      vpnPwFinder,
+		otpNumberFinder:  otpNumberFinder,
+		otpInputFinder:   otpInputFinder,
+	}
 }

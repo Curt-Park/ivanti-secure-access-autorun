@@ -21,13 +21,7 @@ func executeCmd(args []string, errMsg string) string {
 	return executionMsg
 }
 
-func main() {
-	commands := InitCommands()
-
-	// Open the VPN app window.
-	out := executeCmd(commands.vpnExecutor, "Failed opening the process")
-
-	// Activate the VPN app window.
+func activateVPNWindow() {
 	fpid, err := robotgo.FindIds("Ivanti Secure Access")
 	if err != nil || len(fpid) == 0 {
 		log.Fatalf("Failed finding the process: %v\n", err)
@@ -37,50 +31,69 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed activating the window: %v\n", err)
 	}
+}
 
-	// Find the connection button location.
-	out = executeCmd(commands.btnFinder, "Failed finding the connection button")
-	btn_infos := strings.Split(strings.ReplaceAll(out, "\r\n", "\n"), "\n")
-	target_btn_info := strings.Split(btn_infos[1], ", ")
-	if len(target_btn_info) < 6 {
+func findBtnLocation(connectBtnFinder []string) []int {
+	out := executeCmd(connectBtnFinder, "Failed finding the connection button")
+	btnInfos := strings.Split(strings.ReplaceAll(out, "\r\n", "\n"), "\n")
+	targetBtnInfo := strings.Split(btnInfos[1], ", ")
+	if len(targetBtnInfo) < 6 {
 		log.Fatalf("The connection is already established\n")
 	}
-	var btn_location []int
-	for i := 2; i < len(target_btn_info); i++ {
-		n, err := strconv.Atoi(target_btn_info[i])
+	var btnLocation []int
+	for i := 2; i < len(targetBtnInfo); i++ {
+		n, err := strconv.Atoi(targetBtnInfo[i])
 		if err != nil {
 			log.Fatalf("Failed to convert string to int: %v\n", err)
 		}
-		btn_location = append(btn_location, n)
+		btnLocation = append(btnLocation, n)
 	}
-	log.Println("x y w h:", btn_location)
+	log.Println("x y w h:", btnLocation)
+	return btnLocation
+}
 
-	// Move the mouse pointer on the button.
+func moveMouseToButton(btnLocation []int) {
 	robotgo.MouseSleep = 100 // millisecond
-	robotgo.Move(btn_location[0]+btn_location[2]/2, btn_location[1]+btn_location[3]/2)
+	robotgo.Move(btnLocation[0]+btnLocation[2]/2, btnLocation[1]+btnLocation[3]/2)
 	robotgo.Click()
 	robotgo.Sleep(1)
+}
 
-	// Type the vpn password.
-	out = executeCmd(commands.vpnPwFinder, "Failed finding the vpn password")
+func typePassword(vpnPwFinder []string) {
+	out := executeCmd(vpnPwFinder, "Failed finding the vpn password")
 	robotgo.TypeStr(out)
 	robotgo.KeyTap("enter")
 	log.Println("Typed VPN password")
+}
 
-	// Get OTP from SMS.
+func fetchOTPfromSMS(otpNumberFinder []string) string {
 	log.Println("Wait for the otp number...")
-	out = executeCmd(commands.otpFinder, "Failed fetching the otp number")
+	out := executeCmd(otpNumberFinder, "Failed fetching the otp number")
 	re := regexp.MustCompile(`\[OTP:\s(\d+)\]`)
 	match := re.FindStringSubmatch(string(out))
 	if len(match) <= 1 {
 		log.Fatal("No OTP number found")
 	}
 	otp := match[1]
+	return otp
+}
 
-	// Copy the OTP to ClipBoard.
-	err = clipboard.WriteAll(otp)
+func copyOTPtoClipboard(otp string) {
+	err := clipboard.WriteAll(otp)
 	if err != nil {
 		log.Fatalf("Failed to copy text to clipboard: %v\n", err)
 	}
 	log.Println("Copied the OTP to the clipboard. Paste it!")
+}
+
+func main() {
+	commands := InitCommands()
+
+	executeCmd(commands.vpnExecutor, "Failed opening the process")
+	activateVPNWindow()
+	btnLocation := findBtnLocation(commands.connectBtnFinder)
+	moveMouseToButton(btnLocation)
+	typePassword(commands.vpnPwFinder)
+	otp := fetchOTPfromSMS(commands.otpNumberFinder)
+	copyOTPtoClipboard(otp)
 }
