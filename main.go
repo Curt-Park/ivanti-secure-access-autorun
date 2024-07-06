@@ -21,7 +21,7 @@ func main() {
 	otp := fetchOTPfromSMS(commands.otpNumberFinder)
 	otpInputLocation := findElementLocation(commands.otpInputFinder, 0)
 	clickMouseOn(otpInputLocation)
-	typeOTPtoInput(otp)
+	typeText(otp)
 }
 
 func executeCmd(args []string, errMsg string) string {
@@ -60,6 +60,12 @@ func findElementLocation(elementFinder []string, elementIdx int) []int {
 	return elementLocation
 }
 
+func typeText(text string) {
+	robotgo.TypeStr(text)
+	robotgo.KeyTap("enter")
+	log.Println("Typed the text")
+}
+
 func activateVPNWindow() {
 	fpid, err := robotgo.FindIds("Ivanti Secure Access")
 	if err != nil || len(fpid) == 0 {
@@ -74,9 +80,7 @@ func activateVPNWindow() {
 
 func fetchAndTypePassword(vpnPwFinder []string) {
 	out := executeCmd(vpnPwFinder, "Failed finding the vpn password")
-	robotgo.TypeStr(out)
-	robotgo.KeyTap("enter")
-	log.Println("Typed VPN password")
+	typeText(out)
 }
 
 func fetchOTPfromSMS(otpNumberFinder []string) string {
@@ -89,10 +93,4 @@ func fetchOTPfromSMS(otpNumberFinder []string) string {
 	}
 	otp := match[1]
 	return otp
-}
-
-func typeOTPtoInput(otp string) {
-	robotgo.TypeStr(otp)
-	robotgo.KeyTap("enter")
-	log.Println("Entered the OTP to the input")
 }
